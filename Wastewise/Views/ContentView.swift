@@ -18,7 +18,7 @@ struct ContentView: View {
         }
         .environmentObject(addressStore)
         .environmentObject(collectionViewModel)
-        .onChange(of: addressStore.addressRevision) { _, _ in
+        .onChange(of: addressStore.addressRevision, initial: true) { _, _ in
             if addressStore.hasSavedAddress {
                 collectionViewModel.findCollectionDates(address: addressStore.address)
             } else {

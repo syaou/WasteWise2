@@ -1,4 +1,5 @@
 import XCTest
+import Combine
 @testable import Wastewise
 
 @MainActor
@@ -252,6 +253,69 @@ final class WasteWiseUseCaseTests: XCTestCase {
         XCTAssertFalse(selected)
         XCTAssertFalse(store.hasSavedAddress)
         XCTAssertEqual(store.query, "Different address")
+    }
+
+
+    func test_collectionCalendar_matchesPublishedSeptemberRecyclingWeeks() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Australia/Sydney")!
+        for (area, recyclingDays) in [("Area 1", [8, 22]), ("Area 2", [1, 15, 29])] {
+            let dates = FindCollectionScheduleUseCase.collectionDates2026(day: "Tuesday", area: area)
+            let september = dates.filter { calendar.component(.month, from: $0.date) == 9 }
+            XCTAssertEqual(september.filter { $0.type == .recycling }.map { calendar.component(.day, from: $0.date) }, recyclingDays)
+            XCTAssertEqual(september.filter { $0.type == .generalWaste }.count, 5)
+            XCTAssertEqual(september.filter { $0.type == .greenWaste }.count, 5)
+        }
+    }
+
+    func test_collectionCalendar_keepsWeekdayAcrossDaylightSavingAndYearBoundaries() {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Australia/Sydney")!
+        let dates = FindCollectionScheduleUseCase.collectionDates2026(day: " Thursday ", area: "AREA 1")
+        XCTAssertEqual(dates.filter { $0.type == .generalWaste }.count, 53)
+        XCTAssertEqual(dates.filter { $0.type == .recycling }.count, 27)
+        XCTAssertTrue(dates.allSatisfy { calendar.component(.year, from: $0.date) == 2026 && calendar.component(.weekday, from: $0.date) == 5 })
+        XCTAssertEqual(Set(dates.map(\.id)).count, dates.count)
+        let recycling = dates.filter { $0.type == .recycling }
+        XCTAssertEqual(calendar.component(.day, from: recycling.first!.date), 1)
+        XCTAssertEqual(calendar.component(.day, from: recycling.last!.date), 31)
+    }
+
+    func test_collectionCalendar_doesNotInventDatesForUnknownZones() {
+        XCTAssertTrue(FindCollectionScheduleUseCase.collectionDates2026(day: "Tuesday", area: "Area 3").isEmpty)
+        XCTAssertTrue(FindCollectionScheduleUseCase.collectionDates2026(day: "Saturday", area: "Area 1").isEmpty)
+        XCTAssertTrue(FindCollectionScheduleUseCase.collectionDates2026(day: nil, area: nil).isEmpty)
+    }
+
+    func test_findCollectionSchedule_addsCouncilCalendarDatesToLiveZone() async throws {
+        let repository = MockWasteWiseRepository()
+        repository.schedule = CollectionSchedule(address: address, collections: [], collectionDay: "Tuesday", recyclingArea: "Area 2")
+        let result = try await FindCollectionScheduleUseCase(repository: repository).execute(address: address)
+        XCTAssertFalse(result.collections.isEmpty)
+        XCTAssertEqual(result.address, address)
+        XCTAssertEqual(result.recyclingArea, "Area 2")
+    }
+
+
+    func test_collectionLookup_populatesCalendarFromPersistedAddress() async {
+        let suite = "WasteWiseTests.\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: suite)!
+        defer { defaults.removePersistentDomain(forName: suite) }
+        let original = ResidentAddressStore(defaults: defaults, autocomplete: MockAddressAutocomplete())
+        original.save(address)
+        let reopened = ResidentAddressStore(defaults: defaults, autocomplete: MockAddressAutocomplete())
+        XCTAssertTrue(reopened.hasSavedAddress)
+        XCTAssertEqual(reopened.addressRevision, 0)
+        let repository = MockWasteWiseRepository()
+        repository.schedule = CollectionSchedule(address: address, collections: [], collectionDay: "Tuesday", recyclingArea: "Area 2")
+        let viewModel = CollectionScheduleViewModel(repository: repository)
+        let loaded = expectation(description: "Saved address produces calendar dates")
+        let subscription = viewModel.$result.compactMap { $0 }.sink { _ in loaded.fulfill() }
+        viewModel.findCollectionDates(address: reopened.address)
+        await fulfillment(of: [loaded], timeout: 5)
+        XCTAssertEqual(repository.requestedAddress, address)
+        XCTAssertFalse(viewModel.result?.collections.isEmpty ?? true)
+        subscription.cancel()
     }
 
 }

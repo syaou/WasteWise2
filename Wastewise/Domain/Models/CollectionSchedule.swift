@@ -22,12 +22,12 @@ struct ResidentialAddress: Equatable {
 enum CollectionType: String {
     case recycling = "Recycling"
     case generalWaste = "General waste"
-    case greenWaste = "Green waste"
+    case greenWaste = "FOGO"
 }
 
 /// A collection event pairing a household bin stream with a calendar date.
-/// Used in sample schedules and tests; the current live ArcGIS lookup does not create these events
-/// because a collection weekday and recycling area alone do not establish an exact date.
+/// The collection Use Case derives 2026 events from a live zone and the published council calendar.
+/// These are scheduled kerbside collections, not confirmation that a bin has been emptied.
 struct BinCollection: Identifiable, Equatable {
     let id: String
     let type: CollectionType
@@ -36,8 +36,8 @@ struct BinCollection: Identifiable, Equatable {
 
 /// Household collection information associated with one residential address.
 /// A usable result contains dated collections or both a collection day and recycling area.
-/// Live City of Parramatta ArcGIS data supplies `DAY` and `WEEK` (an area label), leaving
-/// dated collections empty; dated sample schedules used in tests are not live council timetables.
+/// ArcGIS supplies `DAY` and `WEEK` (an area label); the Use Case adds dates using the council’s
+/// 2026 calendar. Other years are not inferred from that calendar.
 struct CollectionSchedule: Equatable {
     let address: ResidentialAddress
     let collections: [BinCollection]
