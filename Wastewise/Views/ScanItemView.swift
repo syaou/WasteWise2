@@ -1,7 +1,9 @@
 import SwiftUI
+import Lottie
 
 struct ScanItemView: View {
     @StateObject private var viewModel = ScanItemViewModel()
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @FocusState private var isEnteringItem: Bool
 
@@ -28,6 +30,17 @@ struct ScanItemView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    LottieView {
+                        try await DotLottieFile.named("Search")
+                    }
+                    .animationSpeed(1.5)
+                    .playbackMode(reduceMotion
+                        ? .paused(at: .progress(0))
+                        : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 180)
+                    .accessibilityHidden(true)
+
                     VStack(alignment: .leading, spacing: 6) {
                         Text("What goes where?")
                             .font(.largeTitle.bold())

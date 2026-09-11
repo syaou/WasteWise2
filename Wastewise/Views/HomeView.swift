@@ -35,6 +35,7 @@ struct HomeView: View {
                         LottieView {
                             try await DotLottieFile.named("rubbish")
                         }
+                            .animationSpeed(1.5)
                             .playbackMode(reduceMotion
                                 ? .paused(at: .progress(0))
                                 : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
