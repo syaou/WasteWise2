@@ -84,19 +84,20 @@ struct ScanItemView: View {
                     }
 
                     if let result = viewModel.result {
+                        let style = disposalStyle(for: result.disposalStream)
                         VStack(alignment: .leading, spacing: 16) {
-                            Image(systemName: "arrow.3.trianglepath")
+                            Image(systemName: style.icon)
                                 .font(.system(size: 30, weight: .medium))
-                                .foregroundStyle(green)
+                                .foregroundStyle(charcoal)
                                 .frame(width: 60, height: 60)
-                                .background(green.opacity(0.10), in: RoundedRectangle(cornerRadius: 18))
+                                .background(style.accent.opacity(colorScheme == .dark ? 0.35 : 0.25), in: RoundedRectangle(cornerRadius: 18))
                                 .accessibilityHidden(true)
                             VStack(alignment: .leading, spacing: 6) {
                                 Text(result.itemName)
                                     .font(.subheadline.weight(.medium))
                                 Text(result.disposalStream.rawValue)
                                     .font(.title.bold())
-                                    .foregroundStyle(green)
+                                    .foregroundStyle(charcoal)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
                             Text(result.instruction)
@@ -104,7 +105,7 @@ struct ScanItemView: View {
                         }
                         .padding(24)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(greenSurface, in: RoundedRectangle(cornerRadius: 28))
+                        .background(style.surface, in: RoundedRectangle(cornerRadius: 28))
                     }
 
                     if let error = viewModel.errorMessage {
@@ -134,6 +135,19 @@ struct ScanItemView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(background, for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+        }
+    }
+
+    private func disposalStyle(for stream: DisposalStream) -> (icon: String, accent: Color, surface: Color) {
+        switch stream {
+        case .generalWaste:
+            return ("trash.fill", .red, Color.red.opacity(colorScheme == .dark ? 0.18 : 0.09))
+        case .recycling:
+            return ("arrow.3.trianglepath", .yellow, Color.yellow.opacity(colorScheme == .dark ? 0.18 : 0.20))
+        case .greenWaste:
+            return ("leaf.fill", green, greenSurface)
+        case .specialistDropOff:
+            return ("exclamationmark.triangle.fill", blue, blueSurface)
         }
     }
 
