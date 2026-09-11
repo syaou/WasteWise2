@@ -1,7 +1,9 @@
 import SwiftUI
+import Lottie
 
 struct HomeView: View {
     @EnvironmentObject private var addressStore: ResidentAddressStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @State private var confirmingRemoval = false
     @State private var showingAddressEditor = false
@@ -30,11 +32,14 @@ struct HomeView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     VStack(alignment: .leading, spacing: 20) {
-                        Image(systemName: "leaf.fill")
-                            .font(.system(size: 28, weight: .medium))
-                            .foregroundStyle(green)
-                            .frame(width: 60, height: 60)
-                            .background(green.opacity(0.10), in: RoundedRectangle(cornerRadius: 20))
+                        LottieView {
+                            try await DotLottieFile.named("rubbish")
+                        }
+                            .playbackMode(reduceMotion
+                                ? .paused(at: .progress(0))
+                                : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 200)
                             .accessibilityHidden(true)
 
                         VStack(alignment: .leading, spacing: 10) {

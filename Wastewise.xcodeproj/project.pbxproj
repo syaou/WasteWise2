@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		CC0000000000000000000001 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = CC0000000000000000000002 /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		BB000000000000000000000B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CC0000000000000000000001 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -90,6 +95,7 @@
 			);
 			name = Wastewise;
 			packageProductDependencies = (
+				CC0000000000000000000002 /* Lottie */,
 			);
 			productName = Wastewise;
 			productReference = AA6064CF304E1E3600F879DD /* Wastewise.app */;
@@ -140,6 +146,7 @@
 			);
 			mainGroup = AA6064C6304E1E3600F879DD;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (CC0000000000000000000003 /* lottie-ios */);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = AA6064D0304E1E3600F879DD /* Products */;
 			projectDirPath = "";
@@ -192,6 +199,21 @@
 			targetProxy = BB000000000000000000000B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+        CC0000000000000000000003 /* lottie-ios */ = {
+            isa = XCRemoteSwiftPackageReference;
+            repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+            requirement = {kind = upToNextMajorVersion; minimumVersion = 4.6.1; };
+        };
+/* End XCRemoteSwiftPackageReference section */
+/* Begin XCSwiftPackageProductDependency section */
+        CC0000000000000000000002 /* Lottie */ = {
+            isa = XCSwiftPackageProductDependency;
+            package = CC0000000000000000000003 /* lottie-ios */;
+            productName = Lottie;
+        };
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCBuildConfiguration section */
 		AA6064D8304E1E3800F879DD /* Debug */ = {
