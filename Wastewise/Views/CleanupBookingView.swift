@@ -37,32 +37,6 @@ struct CleanupBookingView: View {
                     }
                     .padding(.vertical, 4)
 
-                    VStack(alignment: .leading, spacing: 16) {
-                        Label("Your address", systemImage: "mappin.and.ellipse")
-                            .font(.headline)
-                            .foregroundStyle(blue)
-                        if addressStore.hasSavedAddress {
-                            Text(addressStore.formattedAddress)
-                                .font(.body.weight(.medium))
-                                .fixedSize(horizontal: false, vertical: true)
-                        } else {
-                            Text("Add your address to get started.")
-                                .foregroundStyle(charcoal.opacity(0.8))
-                        }
-                        Button {
-                            showingAddressEditor = true
-                        } label: {
-                            Label(addressStore.hasSavedAddress ? "Edit address" : "Add address",
-                                  systemImage: addressStore.hasSavedAddress ? "pencil" : "plus")
-                                .font(.subheadline.weight(.semibold))
-                                .frame(minHeight: 44)
-                        }
-                        .tint(blue)
-                    }
-                    .padding(24)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(blueSurface, in: RoundedRectangle(cornerRadius: 24))
-
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Select items")
                             .font(.title3.bold())
@@ -116,10 +90,6 @@ struct CleanupBookingView: View {
                         }
                         .buttonStyle(.plain)
                         .disabled(!addressStore.hasSavedAddress)
-                        Text("Demo only. Requests aren’t sent to council.")
-                            .font(.footnote)
-                            .foregroundStyle(charcoal.opacity(0.8))
-                            .frame(maxWidth: .infinity, alignment: .leading)
                     }
 
                     if let confirmation = viewModel.result {

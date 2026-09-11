@@ -1,7 +1,9 @@
 import SwiftUI
+import Lottie
 
 struct CollectionCalendarView: View {
     @EnvironmentObject private var viewModel: CollectionScheduleViewModel
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @State private var selectedDate = Date()
     @State private var displayedMonth = Calendar.current.component(.year, from: Date()) == 2026
@@ -49,56 +51,21 @@ struct CollectionCalendarView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text("Your bin day")
-                            .font(.largeTitle.bold())
-                        Text("Collections for your household.")
-                            .foregroundStyle(charcoal.opacity(0.8))
+                    LottieView {
+                        try await DotLottieFile.named("collection")
                     }
-                    .padding(.vertical, 4)
+                    .animationSpeed(1.5)
+                    .playbackMode(reduceMotion
+                        ? .paused(at: .progress(0))
+                        : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 200)
+                    .accessibilityHidden(true)
 
                     if viewModel.isLoading {
                         ProgressView("Finding your collection day…")
                             .tint(green)
                             .frame(maxWidth: .infinity)
-                            .padding(32)
-                            .background(greenSurface, in: RoundedRectangle(cornerRadius: 28))
-                    } else if let schedule = viewModel.result {
-                        VStack(alignment: .leading, spacing: 18) {
-                            Image(systemName: "calendar")
-                                .font(.system(size: 30, weight: .medium))
-                                .foregroundStyle(green)
-                                .frame(width: 60, height: 60)
-                                .background(green.opacity(0.10), in: RoundedRectangle(cornerRadius: 18))
-                                .accessibilityHidden(true)
-                            if let day = schedule.collectionDay {
-                                VStack(alignment: .leading, spacing: 6) {
-                                    Text("Collection day")
-                                        .font(.subheadline.weight(.medium))
-                                    Text(day)
-                                        .font(.largeTitle.bold())
-                                        .foregroundStyle(green)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                            }
-                            if let area = schedule.recyclingArea {
-                                Divider().overlay(green.opacity(0.15))
-                                Label {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        Text("Recycling area")
-                                            .font(.subheadline)
-                                        Text(area).font(.title3.bold())
-                                    }
-                                } icon: {
-                                    Image(systemName: "arrow.3.trianglepath")
-                                        .font(.title2)
-                                        .foregroundStyle(green)
-                                }
-                            }
-                        }
-                        .padding(24)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(greenSurface, in: RoundedRectangle(cornerRadius: 28))
                     }
 
                     VStack(alignment: .leading, spacing: 16) {

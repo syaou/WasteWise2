@@ -40,14 +40,10 @@ struct HomeView: View {
                                 ? .paused(at: .progress(0))
                                 : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
                             .frame(maxWidth: .infinity)
-                            .frame(height: 200)
+                            .frame(height: 160)
                             .accessibilityHidden(true)
 
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("A little less waste.\nA cleaner neighbourhood.")
-                                .font(.largeTitle.bold())
-                                .tracking(-0.3)
-                                .fixedSize(horizontal: false, vertical: true)
                             Text("Check what goes where, find your bin day and plan a clean up.")
                                 .font(.body)
                                 .foregroundStyle(charcoal.opacity(0.8))
