@@ -73,6 +73,13 @@ struct CleanupBookingView: View {
                     }
 
                     VStack(spacing: 12) {
+                        if !addressStore.hasSavedAddress {
+                            Text("Add your address on Home to prepare a request.")
+                                .font(.subheadline)
+                                .foregroundStyle(charcoal.opacity(0.8))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                        }
+
                         Button {
                             viewModel.submitBooking(address: addressStore.address)
                         } label: {
