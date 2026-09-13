@@ -1,7 +1,9 @@
 import SwiftUI
+import Lottie
 
 struct CleanupBookingView: View {
     @EnvironmentObject private var addressStore: ResidentAddressStore
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.colorScheme) private var colorScheme
     @State private var showingAddressEditor = false
     @StateObject private var viewModel = CleanupBookingViewModel()
@@ -29,6 +31,17 @@ struct CleanupBookingView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
+                    LottieView {
+                        try await DotLottieFile.named("cleanup")
+                    }
+                    .animationSpeed(1.5)
+                    .playbackMode(reduceMotion
+                        ? .paused(at: .progress(0))
+                        : .playing(.fromProgress(0, toProgress: 1, loopMode: .loop)))
+                    .frame(maxWidth: .infinity)
+                    .frame(height: 200)
+                    .accessibilityHidden(true)
+
                     VStack(alignment: .leading, spacing: 6) {
                         Text("Time for a clean-up?")
                             .font(.largeTitle.bold())
